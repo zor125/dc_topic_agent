@@ -31,6 +31,18 @@ def parse_list(html_text: str) -> List[Dict]:
 
     items = []
     for row in rows:
+
+         # ✅ 공지/고정글 스킵 (icon_notice)
+        if (row.get("data-type") or "") == "icon_notice":
+            continue
+        # 보험 1) 공지 아이콘이 있으면 스킵
+        if row.xpath(".//em[contains(@class,'icon_notice')]"):
+            continue
+        # 보험 2) '공지' 라벨(td.gall_subject)이면 스킵
+        subj = row.xpath(".//td[contains(@class,'gall_subject')]")
+        if subj and "공지" in subj[0].text_content():
+            continue
+        
         a_list = row.xpath(".//td[contains(@class,'gall_tit')]//a")
         if not a_list:
             continue
